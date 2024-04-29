@@ -139,11 +139,26 @@ const top_albums = async function(req, res) {
 const search_songs = async function(req, res) {
   // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
   // Some default parameters have been provided for you, but you will need to fill in the rest
-  const title = req.query.title ?? '';
-  const durationLow = req.query.duration_low ?? 60;
-  const durationHigh = req.query.duration_high ?? 660;
-
-  res.json([]); // replace this with your implementation
+    // Some default parameters have been provided for you, but you will need to fill in the rest
+    const title = req.query.title ?? '';
+    const description = req.query.description ?? '';
+    const designation = req.query.designation ?? '';
+    const points = req.query.points ?? 0;
+    const price = req.query.price ?? 0;
+    const variety = req.query.variety ?? '';
+    const winery = req.query.winery ?? '';
+    // title, description, designation, points, price, variety, winery
+    connection.query(`SELECT * FROM Wine w WHERE w.title LIKE '%${title}%'
+    AND w.description LIKE '%${description}%' 
+   AND w.designation LIKE '%${designation}%' and w.points >= ${points} AND w.price >= ${price} AND w.variety LIKE '%${variety}%'
+   AND w.winery LIKE '%${winery}%';`, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json([]);
+      } else {
+        res.json(data);
+      }
+    });
 }
 
 module.exports = {
