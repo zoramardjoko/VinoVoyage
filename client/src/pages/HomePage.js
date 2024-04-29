@@ -41,7 +41,7 @@ export default function HomePage() {
     {
       field: 'points',
       headerName: 'Points',
-      renderCell: (row) => <Link onClick={() => setSelectedSongId(row.song_id)}>{row.points}</Link>
+      renderCell: (row) => <Link onClick={() => setSelectedWineTitle(row.song_id)}>{row.points}</Link>
     },
     {
       field: 'plays',
