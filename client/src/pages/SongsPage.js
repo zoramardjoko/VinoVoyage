@@ -39,9 +39,9 @@ export default function SongsPage() {
     )
       .then(res => res.json())
       .then(resJson => {
-        // DataGrid expects an array of objects with a unique id.
-        // To accomplish this, we use a map with spread syntax (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax)
-        const songsWithId = resJson.map((song) => ({ id: song.song_id, ...song }));
+        const songsWithId = resJson.map((song) => {
+          return { id: song.song_id, ...song };
+        });
         setData(songsWithId);
       });
   }
@@ -124,6 +124,7 @@ export default function SongsPage() {
         rowsPerPageOptions={[5, 10, 25]}
         onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
         autoHeight
+        getRowId={(row) => row.song_id || row.title}
       />
     </Container>
   );
