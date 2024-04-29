@@ -39,14 +39,12 @@ const random = async function(req, res) {
   // you can use a ternary operator to check the value of request query values
   // which can be particularly useful for setting the default value of queries
   // note if users do not provide a value for the query it will be undefined, which is falsey
-  const explicit = req.query.explicit === 'true' ? 1 : 0;
 
   // Here is a complete example of how to query the database in JavaScript.
   // Only a small change (unrelated to querying) is required for TASK 3 in this route.
   connection.query(`
     SELECT *
-    FROM Songs
-    WHERE explicit <= ${explicit}
+    FROM Wine
     ORDER BY RAND()
     LIMIT 1
   `, (err, data) => {
@@ -62,9 +60,7 @@ const random = async function(req, res) {
       // being song_id and title which you will add. In this case, there is only one song
       // so we just directly access the first element of the query results array (data)
       // TODO (TASK 3): also return the song title in the response
-      res.json({
-        song_id: data[0].song_id,
-      });
+      res.json(data);
     }
   });
 }
@@ -115,16 +111,31 @@ const album_songs = async function(req, res) {
 const top_songs = async function(req, res) {
   const page = req.query.page;
   // TODO (TASK 8): use the ternary (or nullish) operator to set the pageSize based on the query or default to 10
-  const pageSize = undefined;
+  const pageSize = req.query.page_size ?? 10;
 
   if (!page) {
     // TODO (TASK 9)): query the database and return all songs ordered by number of plays (descending)
     // Hint: you will need to use a JOIN to get the album title as well
-    res.json([]); // replace this with your implementation
-  } else {
+    connection.query(`SELECT * FROM Wine ORDER BY points DESC, title ASC`, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    });
+    } else {
     // TODO (TASK 10): reimplement TASK 9 with pagination
+    connection.query(`SELECT * FROM Wine ORDER BY points DESC, title ASC LIMIT ${(page-1)*pageSize}, ${pageSize}`, (err, data) => {
+      if (err || data.length === 0) {
+        console.log(err);
+        res.json({});
+      } else {
+        res.json(data);
+      }
+    });
     // Hint: use LIMIT and OFFSET (see https://www.w3schools.com/php/php_mysql_select_limit.asp)
-    res.json([]); // replace this with your implementation
+    // res.json([]); // replace this with your implementation
   }
 }
 
@@ -143,14 +154,18 @@ const search_songs = async function(req, res) {
     const title = req.query.title ?? '';
     const description = req.query.description ?? '';
     const designation = req.query.designation ?? '';
-    const points = req.query.points ?? 0;
-    const price = req.query.price ?? 0;
+    const pointsLower = req.query.points_lower_bound ?? 0;
+    const pointsUpper = req.query.points_upper_bound ?? 100;
+
+    const priceLower = req.query.price_lower_bound ?? 0;
+    const priceUpper = req.query.price_upper_bound ?? 1000000000000;
+
     const variety = req.query.variety ?? '';
     const winery = req.query.winery ?? '';
     // title, description, designation, points, price, variety, winery
     connection.query(`SELECT * FROM Wine w WHERE w.title LIKE '%${title}%'
     AND w.description LIKE '%${description}%' 
-   AND w.designation LIKE '%${designation}%' and w.points >= ${points} AND w.price >= ${price} AND w.variety LIKE '%${variety}%'
+   AND w.designation LIKE '%${designation}%' and w.points >= ${pointsLower} AND w.points <= ${pointsUpper} AND w.price >= ${priceLower} AND w.price <= ${priceUpper} AND w.variety LIKE '%${variety}%'
    AND w.winery LIKE '%${winery}%';`, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);

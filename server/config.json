@@ -1,9 +1,9 @@
 {
-  "rds_host": "",
+  "rds_host": "database-1.c9sc46a4yf0q.us-east-1.rds.amazonaws.com",
   "rds_port": "3306",
-  "rds_user": "",
-  "rds_password": "",
-  "rds_db": "Vino",
+  "rds_user": "admin",
+  "rds_password": "20040916Kz",
+  "rds_db": "VinoVoyage",
   "server_host": "localhost",
   "server_port": "8080"
 }
