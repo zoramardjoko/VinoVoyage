@@ -17,22 +17,6 @@ connection.connect((err) => err && console.log(err));
  ******************/
 
 // Route 1: GET /author/:type
-const author = async function(req, res) {
-  // TODO (TASK 1): replace the values of name and pennkey with your own
-  const name = 'John Doe';
-  const pennkey = 'jdoe';
-
-  // checks the value of type in the request parameters
-  // note that parameters are required and are specified in server.js in the endpoint by a colon (e.g. /author/:type)
-  if (req.params.type === 'name') {
-    // res.send returns data back to the requester via an HTTP response
-    res.json({ name: name });
-  } else if (null) {
-    // TODO (TASK 2): edit the else if condition to check if the request parameter is 'pennkey' and if so, send back a JSON response with the pennkey
-  } else {
-    res.status(400).json({});
-  }
-}
 
 // Route 2: GET /random
 const random = async function(req, res) {
@@ -60,7 +44,10 @@ const random = async function(req, res) {
       // being song_id and title which you will add. In this case, there is only one song
       // so we just directly access the first element of the query results array (data)
       // TODO (TASK 3): also return the song title in the response
-      res.json(data);
+      res.json({
+        title: data[0].title,
+        winery: data[0].winery
+      });
     }
   });
 }
@@ -70,11 +57,12 @@ const random = async function(req, res) {
  ********************************/
 
 // Route 3: GET /song/:song_id
-const song = async function(req, res) {
+const wine = async function(req, res) {
   // TODO (TASK 4): implement a route that given a song_id, returns all information about the song
   // Hint: unlike route 2, you can directly SELECT * and just return data[0]
   // Most of the code is already written for you, you just need to fill in the query
-  connection.query(``, (err, data) => {
+  const title = req.params.title;
+  connection.query(`SELECT * FROM Wine WHERE title = '${title}' LIMIT 1`, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
       res.json({});
@@ -177,9 +165,8 @@ const search_songs = async function(req, res) {
 }
 
 module.exports = {
-  author,
   random,
-  song,
+  wine,
   album,
   albums,
   album_songs,
