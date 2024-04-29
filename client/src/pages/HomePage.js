@@ -53,23 +53,22 @@ export default function HomePage() {
   // TODO (TASK 15): define the columns for the top albums (schema is Album Title, Plays), where Album Title is a link to the album page
   // Hint: this should be very similar to songColumns defined above, but has 2 columns instead of 3
   // Hint: recall the schema for an album is different from that of a song (see the API docs for /top_albums). How does that impact the "field" parameter and the "renderCell" function for the album title column?
-  const albumColumns = [
+  // const albumColumns = [
 
-  ]
+  // ]
 
   return (
     <Container>
-      {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
+      
       {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
-      <h2>Check out your song of the day:&nbsp;
+      <h2>Check out your wine of the day:&nbsp;
         <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
       </h2>
       <Divider />
       <h2>Top Songs</h2>
       <LazyTable route={`http://${config.server_host}:${config.server_port}/top_songs`} columns={songColumns} />
       <Divider />
-      {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
-      {/* TODO (TASK 17): add a paragraph (<p></p>) that displays “Created by [name]” using the name state stored from TASK 13/TASK 14 */}
+      
     </Container>
   );
 };
