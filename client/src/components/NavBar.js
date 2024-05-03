@@ -39,6 +39,7 @@ export default function NavBar() {
           <NavText href='/' text='VINOVOYAGE' isMain />
           <NavText href='/songs' text='WINES' />
           <NavText href='/albums' text='SOMMELIERS' />
+          <NavText href='/trivia' text='TRIVIA' />
         </Toolbar>
       </Container>
     </AppBar>
