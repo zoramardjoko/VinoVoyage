@@ -33,6 +33,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/sommeliers" element={<SommeliersPage />} />
           <Route path="/search" element={<WineSearchPage />} />
+          <Route path="/trivia" element={<TriviaPage />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
