@@ -2,12 +2,12 @@
   "name": "vinovoyage-fullstack",
   "version": "1.0.0",
   "description": "A full-stack web-application for wine enthusiasts",
-  "main": "server/server.js",
+  "main": "server/index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "cd server && nodemon server.js",
+    "server": "cd server && nodemon index.js",
     "client": "cd client && npm start",
-    "start": "node server/server.js",
+    "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test-server": "cd server && jest --coverage",
     "test-client": "cd client && react-scripts test"
