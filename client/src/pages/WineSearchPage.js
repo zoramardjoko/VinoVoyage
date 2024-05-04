@@ -44,7 +44,7 @@ export default function WineSearchPage() {
   // LazyTable component. The big difference is we provide all data to the DataGrid component
   // instead of loading only the data we need (which is necessary in order to be able to sort by column)
   const columns = [
-    { field: 'title', headerName: 'Title', width: 500, renderCell: (params) => (
+    { field: 'title', headerName: 'Title', width: 950, renderCell: (params) => (
         <Link onClick={() => setSelectedWine(params.row.title)}>{params.value}</Link>
     ) },
     { field: 'price', headerName: 'Price' },
@@ -56,7 +56,7 @@ export default function WineSearchPage() {
       {selectedWine && <WineCard songId={selectedWine} handleClose={() => setSelectedWine(null)} />}
       <h2>Search Wines</h2>
       <Grid container spacing={6}>
-        <Grid item xs={8}>
+        <Grid item xs={12}>
           <TextField label='Title' value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: "100%" }}/>
         </Grid>
         <Grid item xs={6}>
