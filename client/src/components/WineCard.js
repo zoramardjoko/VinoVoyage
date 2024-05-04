@@ -15,7 +15,7 @@ export default function WineCard({ songId, handleClose }) {
   // Hint: since the second fetch depends on the information from the first, try nesting the second fetch within the then block of the first (pseudocode is provided)
   useEffect(() => {
     // Hint: here is some pseudocode to guide you
-    fetch(`http://${config.server_host}:${config.server_port}/wine/${songId}`)
+    fetch(`https://vino-voyage.vercel.app/wine/${songId}`)
       .then(res => res.json())
       .then(resJson => setSongData(resJson)
 )
