@@ -10,7 +10,7 @@ const config = require('../config.json');
 export default function WineCard({ songId, handleClose }) {
   const [songData, setSongData] = useState({});
 
-  // TODO (TASK 20): fetch the song specified in songId and based on the fetched album_id also fetch the album data
+  // fetch the wine specified in songId and based on the fetched album_id also fetch the album data
   // Hint: you need to both fill in the callback and the dependency array (what variable determines the information you need to fetch?)
   // Hint: since the second fetch depends on the information from the first, try nesting the second fetch within the then block of the first (pseudocode is provided)
   useEffect(() => {

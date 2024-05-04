@@ -32,9 +32,7 @@ export default function HomePage() {
       });
   }, []);
 
-
-
-
+  
   return (
     <Container>
       {selectedWineTitle && <WineCard songId={selectedWineTitle} handleClose={() => setSelectedWineTitle(null)} />}

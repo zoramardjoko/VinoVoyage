@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 // import css page
 import './CSS/App.css';
 
+// this is our bank of questions that the trivia page will pull from and use to quiz the user
+// will feature both "static" and "dynamic" questions. What this means is that some answers to
+// certain quesitons will be the result of some of our queries to the database, while others will
+// will be hard-coded into the questions Array.
 const questions = [
     { id: 1, question: "What is the term used for the year a wine's grapes were harvested?", options: ["Blend", "Vintage", "Reserve", "Estate"], answer: "Vintage" },
     { id: 2, question: "Which country is the largest producer of wine in the world?", options: ["France", "Spain", "Italy", "United States"], answer: "Italy" },
