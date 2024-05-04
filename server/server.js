@@ -12,12 +12,10 @@ app.use(cors({
 // provide their handlers that we implemented in routes.js
 app.get('/random', routes.random);
 app.get('/wine/:title', routes.wine);
-app.get('/album/:album_id', routes.album);
-app.get('/albums', routes.albums);
-app.get('/album_songs/:album_id', routes.album_songs);
-app.get('/top_songs', routes.top_songs);
-app.get('/top_albums', routes.top_albums);
-app.get('/search_songs', routes.search_songs);
+app.get('/sommelier/:taster_name', routes.sommelier);
+app.get('/sommeliers', routes.sommeliers);
+app.get('/top_wines', routes.top_wines);
+app.get('/search_wines', routes.search_wines);
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)

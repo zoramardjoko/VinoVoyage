@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { Button, Checkbox, Container, FormControlLabel, Grid, Link, Slider, TextField } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import SongCard from '../components/SongCard';
+import WineCard from '../components/WineCard';
 import { formatDuration } from '../helpers/formatter';
 const config = require('../config.json');
 
-export default function SongsPage() {
+export default function WineSearchPage() {
   const [pageSize, setPageSize] = useState(10);
   const [data, setData] = useState([]);
   const [selectedSongId, setSelectedSongId] = useState(null);
@@ -20,7 +20,7 @@ export default function SongsPage() {
   const [explicit, setExplicit] = useState(false);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_songs`)
+    fetch(`http://${config.server_host}:${config.server_port}/search_wines`)
       .then(res => res.json())
       .then(resJson => {
         const songsWithId = resJson.map((song) => ({ id: song.song_id, ...song }));
@@ -29,7 +29,7 @@ export default function SongsPage() {
   }, []);
 
   const search = () => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_songs?title=${title}` +
+    fetch(`http://${config.server_host}:${config.server_port}/search_wines?title=${title}` +
       `&duration_low=${duration[0]}&duration_high=${duration[1]}` +
       `&plays_low=${plays[0]}&plays_high=${plays[1]}` +
       `&danceability_low=${danceability[0]}&danceability_high=${danceability[1]}` +
@@ -73,7 +73,7 @@ export default function SongsPage() {
   // will automatically lay out all the grid items into rows based on their xs values.
   return (
     <Container>
-      {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
+      {selectedSongId && <WineCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
       <h2>Search Songs</h2>
       <Grid container spacing={6}>
         <Grid item xs={8}>
