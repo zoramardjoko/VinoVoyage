@@ -10,7 +10,7 @@ export default function SommeliersPage() {
   const [sommeliers, setSommeliers] = useState([]);
 
   useEffect(() => {
-    fetch(`https://vino-voyage.vercel.app/sommeliers`)
+    fetch(`https://vino-voyage-server.vercel.app/sommeliers`)
       .then(res => res.json())
       .then(resJson => {
         setSommeliers(resJson);
