@@ -1,0 +1,89 @@
+.App {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 20px;
+    max-width: 600px;
+    margin: 50px auto;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  button {
+    background-color: #a895e0;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #8135bb;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  
+  div.options-container {
+    margin-top: 20px;
+  }
+  
+  .score {
+    font-size: 20px;
+    color: #28a745;
+  }
+  
+  .game-over {
+    color: #dc3545;
+  }
+  
+  .masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 16px;
+    padding: 16px;
+  }
+  
+  .card {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  .card-content {
+    width: 250px;  /* Set a fixed width */
+    height: 200px; /* Set a fixed height */
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    /* display: flex; */
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .card-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  
+  h2 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .truncate {
+    overflow: hidden;
+    white-space: nowrap; /* Keeps the text on a single line */
+    text-overflow: ellipsis; /* Adds ellipsis when text overflows */
+    display: block; /* or inline-block */
+    width: 90%; /* Adjust based on your layout */
+  }

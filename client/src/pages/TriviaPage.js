@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // import css page
-import './CSS/TriviaPage.css';
+import './CSS/App.css';
 
 const questions = [
     { id: 1, question: "What is the term used for the year a wine's grapes were harvested?", options: ["Blend", "Vintage", "Reserve", "Estate"], answer: "Vintage" },
