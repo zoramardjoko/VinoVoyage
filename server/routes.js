@@ -139,6 +139,18 @@ const search_wines = async function(req, res) {
     });
 }
 
+const test = async function(req, res) {
+  connection.query(`SELECT * FROM Wine w ORDER BY price DESC;`, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+
 module.exports = {
   random,
   wine,
@@ -146,4 +158,5 @@ module.exports = {
   sommeliers,
   top_wines,
   search_wines,
+  test
 }

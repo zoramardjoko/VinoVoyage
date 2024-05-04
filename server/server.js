@@ -16,6 +16,8 @@ app.get('/sommelier/:taster_name', routes.sommelier);
 app.get('/sommeliers', routes.sommeliers);
 app.get('/top_wines', routes.top_wines);
 app.get('/search_wines', routes.search_wines);
+app.get('/test', routes.test);
+
 
 app.listen(config.server_port, () => {
   console.log(`Server running at http://${config.server_host}:${config.server_port}/`)
