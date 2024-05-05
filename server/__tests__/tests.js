@@ -1,151 +1,116 @@
 const { expect } = require('@jest/globals');
 const supertest = require('supertest');
-const app = require('../server');
+const app = require('../index');
 const results = require("./results.json")
-
-test('GET /author/name', async () => {
-  await supertest(app).get('/author/name')
-    .expect(200)
-    .then((res) => {
-      expect(res.body.name).not.toEqual("John Doe");
-    });
-});
-
-test('GET /author/pennkey', async () => {
-  await supertest(app).get('/author/pennkey')
-    .expect(200)
-    .then((res) => {
-      expect(res.body.pennkey).not.toEqual("jdoe");
-    });
-});
 
 test('GET /random', async () => {
   await supertest(app).get('/random')
     .expect(200)
     .then((res) => {
       expect(res.body).toStrictEqual({
-        song_id: expect.any(String),
+        winery: expect.any(String),
         title: expect.any(String),
       });
     });
 });
 
-test('GET /song/0kN3oXYWWAk1uC0y2WoyOE', async () => {
-  await supertest(app).get('/song/0kN3oXYWWAk1uC0y2WoyOE')
+test('GET /wine/Black Stallion 2013 Limited Release Merlot (Napa Valley)', async () => {
+  await supertest(app).get('/wine/Black Stallion 2013 Limited Release Merlot (Napa Valley)')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.song)
+      expect(res.body.winery).toMatch(/^Black Stallion$/)
     });
 });
 
-test('GET /album/3lS1y25WAhcqJDATJK70Mq', async () => {
-  await supertest(app).get('/album/3lS1y25WAhcqJDATJK70Mq')
+test('GET /wine/randomwordnotindata', async () => {
+  await supertest(app).get('/wine/randomwordnotindata')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.album)
+      expect(res.body).toEqual({})
     });
 });
 
-test('GET /albums', async () => {
-  await supertest(app).get('/albums')
+test('GET /sommeliers', async () => {
+  const expectedLength = 19;
+  await supertest(app).get('/sommeliers')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.albums)
+      expect(res.body.length).toBe(expectedLength)
     });
 });
 
-test('GET /album_songs/6AORtDjduMM3bupSWzbTSG', async () => {
-  await supertest(app).get('/album_songs/6AORtDjduMM3bupSWzbTSG')
+test('GET /top_wines top 12', async () => {
+  await supertest(app).get('/top_wines')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.album_songs)
+      expect(res.body.length).toEqual(12);
+      expect(res.body[0].variety).toMatch(/^Sangiovese$/);
     });
 });
 
-test('GET /top_songs all', async () => {
-  await supertest(app).get('/top_songs')
+test('GET /top_wines with pages', async () => {
+  await supertest(app).get('/top_wines?page=1&?page_size=10')
     .expect(200)
     .then((res) => {
-      expect(res.body.length).toEqual(238)
-      expect(res.body[22]).toStrictEqual(results.top_songs_all_22)
+      expect(res.body.length).toEqual(10);
+      // expect(res.body[0].variety).toMatch(/^Sangiovese$/);
     });
 });
 
-test('GET /top_songs page 3', async () => {
-  await supertest(app).get('/top_songs?page=3')
+test('GET /top_wines with pages error', async () => {
+  await supertest(app).get('/top_wines?page=1&page_size=0')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.top_songs_page_3)
+      expect(res.body).toEqual({});
+      // expect(res.body[0].variety).toMatch(/^Sangiovese$/);
     });
 });
 
-test('GET /top_songs page 5 page_size 3', async () => {
-  await supertest(app).get('/top_songs?page=5&page_size=3')
+
+test('GET /search_wines one result', async () => {
+  await supertest(app).get('/search_wines?title=2013%20purple%20paradise')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.top_songs_page_5_page_size_3)
+      console.log(res.body);
+      expect(res.body.length).toEqual(1);
+      expect(res.body[0].winery).toMatch(/^Chronic Cellars$/);
     });
 });
 
-test('GET /top_albums all', async () => {
-  await supertest(app).get('/top_albums')
+test('GET /search_wines no results', async () => {
+  await supertest(app).get('/search_wines?title=2013%20purple%20paradise?price_lower_bound=100')
     .expect(200)
     .then((res) => {
-      expect(res.body.length).toEqual(12)
-      expect(res.body[7]).toStrictEqual(results.top_albums_all_7)
+      console.log(res.body);
+      expect(res.body.length).toEqual(0);
+      expect(res.body).toEqual([]);
     });
 });
 
-test('GET /top_albums page 2', async () => {
-  await supertest(app).get('/top_albums?page=2')
+
+test('GET /question_one', async () => {
+  await supertest(app).get('/question_one')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.top_albums_page_2)
+      console.log(res.body);
+      expect(res.body.length).toEqual(1);
+      expect(res.body[0].title.trim()).toMatch(/^100 Percent Wine 2012 All Profits to Charity Red \(California\)$/);
     });
 });
 
-test('GET /top_albums page 5 page_size 1', async () => {
-  await supertest(app).get('/top_albums?page=5&page_size=1')
+test('GET /question_two', async () => {
+  await supertest(app).get('/question_two')
     .expect(200)
     .then((res) => {
-      expect(res.body).toStrictEqual(results.top_albums_page_5_page_size_1)
+      expect(res.body[0].title).toMatch(/^:Nota Bene 2005 Una Notte Red \(Washington\)$/);
     });
 });
 
-test('GET /search_songs default', async () => {
-  await supertest(app).get('/search_songs')
+test('GET /question_three', async () => {
+  await supertest(app).get('/question_three')
     .expect(200)
     .then((res) => {
-      expect(res.body.length).toEqual(219)
-      expect(res.body[0]).toStrictEqual({
-        song_id: expect.any(String),
-        album_id: expect.any(String),
-        title: expect.any(String),
-        number: expect.any(Number),
-        duration: expect.any(Number),
-        plays: expect.any(Number),
-        danceability: expect.any(Number),
-        energy: expect.any(Number),
-        valence: expect.any(Number),
-        tempo: expect.any(Number),
-        key_mode: expect.any(String),
-        explicit: expect.any(Number),
-      });
+      expect(typeof res.body[0].average_points).toBe('number');
     });
 });
 
-test('GET /search_songs filtered', async () => {
-  await supertest(app).get('/search_songs?title=all&explicit=true&energy_low=0.5&valence_low=0.2&valence_high=0.8')
-    .expect(200)
-    .then((res) => {
-      expect(res.body).toStrictEqual(results.search_songs_filtered)
-    });
-});
-
-test('GET /search_songs null', async () => {
-  await supertest(app).get('/search_songs?title=junk_data')
-    .expect(200)
-    .then((res) => {
-      expect(res.body).toStrictEqual([])
-    });
-});

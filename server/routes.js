@@ -17,10 +17,7 @@ connection.connect((err) => err && console.log(err));
 // will return random wine title
 const random = async function(req, res) {
   connection.query(`
-    SELECT *
-    FROM Wine
-    ORDER BY RAND()
-    LIMIT 1
+    SELECT * FROM Wine ORDER BY RAND() LIMIT 1
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -55,12 +52,7 @@ const sommeliers = async function(req, res) {
   GROUP BY sommelier
   ORDER BY number_of_wines DESC;
   `, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
@@ -117,24 +109,14 @@ const search_wines = async function(req, res) {
 const question_one = async function(req, res) {
   connection.query(`SELECT w.title FROM Wine w JOIN Location L on w.title = L.title WHERE price < 20 
   AND L.country = 'US' LIMIT 1;`, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
 // trivia: Finds wines with descriptions that include the word 'citrus'.
 const question_two = async function(req, res) {
   connection.query(`SELECT * FROM Wine WHERE description LIKE '%citrus%';`, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
@@ -150,12 +132,7 @@ const question_three = async function(req, res) {
      HAVING COUNT(title) > 10
   );
   `, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
