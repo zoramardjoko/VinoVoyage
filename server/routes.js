@@ -12,9 +12,6 @@ const connection = mysql.createConnection({
 });
 connection.connect((err) => err && console.log(err));
 
-/******************
- * WARM UP ROUTES *
- ******************/
 
 // Route 2: GET /random
 // will return random wine title
@@ -134,17 +131,6 @@ const search_wines = async function(req, res) {
     });
 }
 
-const test = async function(req, res) {
-  connection.query(`SELECT * FROM Wine w ORDER BY price DESC;`, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
-      res.json(data);
-    }
-  });
-}
-
 const question_one = async function(req, res) {
   connection.query(`SELECT w.title FROM Wine w JOIN Location L on w.title = L.title WHERE price < 20 
   AND L.country = 'US' LIMIT 1;`, (err, data) => {
@@ -196,7 +182,6 @@ module.exports = {
   sommeliers,
   top_wines,
   search_wines,
-  test,
   question_one,
   question_two,
   question_three
