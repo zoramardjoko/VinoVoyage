@@ -92,9 +92,10 @@ const search_wines = async function(req, res) {
     const pointsUpper = req.query.points_upper_bound ?? 100;
     const priceLower = req.query.price_lower_bound ?? 0;
     const priceUpper = req.query.price_upper_bound ?? 2013;
+    const description = req.query.description ?? '';
 
     connection.query(`SELECT * FROM Wine w WHERE w.title LIKE '%${title}%'
-    AND w.points >= ${pointsLower} AND w.points <= ${pointsUpper} AND w.price >= ${priceLower} AND w.price <= ${priceUpper};`, (err, data) => {
+    AND w.points >= ${pointsLower} AND w.points <= ${pointsUpper} AND w.price >= ${priceLower} AND w.price <= ${priceUpper} AND description LIKE '%${description}%';`, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
         res.json([]);
@@ -122,20 +123,74 @@ const question_two = async function(req, res) {
 
 // trivia: Computes the average rating points of wines from Washington reviewed by sommeliers who have reviewed more than 10 wines.
 const question_three = async function(req, res) {
-  connection.query(`SELECT AVG(W.points) AS average_points FROM Wine W
-  JOIN Location L ON W.title = L.title
-  JOIN Sommelier S ON W.title = S.title WHERE L.province = 'Washington'
-  AND S.taster_name IN (
-     SELECT taster_name
-     FROM Sommelier
-     GROUP BY taster_name
-     HAVING COUNT(title) > 10
-  );
-  `, (err, data) => {
-      res.json(data);
-  });
+  // Function to run a query and return a promise
+  const runQuery = (query) => {
+    return new Promise((resolve, reject) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  try {
+    // create the index on the country table for optimization (include error handling)
+    try {
+      await runQuery(`CREATE INDEX idx_wine_price ON Wine(price);`);
+    } catch (err) {
+      if (!err.message.includes('Duplicate key name')) {
+        throw err;
+      }
+      console.log('Index already exists, continuing...');
+    }
+
+    try {
+      await runQuery(`CREATE INDEX idx_Slp ON GSOD(Slp);`);
+    } catch (err) {
+      if (!err.message.includes('Duplicate key name')) {
+        throw err;
+      }
+      console.log('Index already exists, continuing...');
+    }
+
+    await runQuery(`DROP TABLE IF EXISTS GSOD_STN;`);
+
+    // Create MaxPoints table for optimization
+    await runQuery(`
+      CREATE TABLE GSOD_STN AS (
+        SELECT G.Stn, AVG(G.Slp) AS Avg_Slp
+        FROM GSOD G
+        GROUP BY G.Stn
+    );`);
+
+    // this is the main query
+    const data = await runQuery(`
+    SELECT L.Country, AVG(price) as avg_price
+    FROM Wine W
+       JOIN Location L ON W.title = L.Title AND L.Country = 'Argentina'
+       JOIN Country_Abb CA ON L.Country = CA.name
+       JOIN Country C ON C.country = CA.abbreviation
+       JOIN GSOD_STN G ON G.Stn = C.USAF
+    GROUP BY L.Country
+    HAVING AVG(G.Avg_Slp) < (SELECT * FROM AvgSlp);    
+    `);
+
+    // Send data to client
+    res.json(data);
+
+    // Optionally, clean up MaxPoints table if it's temporary for this query
+    // do this for good practice
+    await runQuery(`DROP TABLE IF EXISTS GSOD_STN;`);
+  } catch (err) {
+    console.error('SQL Error:', err);
+    res.json([]);
+  }
 }
 
+// trivia:
 const question_four = async function(req, res) {
   // Function to run a query and return a promise
   const runQuery = (query) => {
@@ -211,6 +266,171 @@ const test = async function(req, res) {
 }
 
 
+const question_five = async function(req, res) {
+  // Function to run a query and return a promise
+  const runQuery = (query) => {
+    return new Promise((resolve, reject) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  try {
+    // create the index on the country table for optimization (include error handling)
+    try {
+      await runQuery(`CREATE INDEX idx_location_title_country
+      ON Location (Title, Country);`);
+    } catch (err) {
+      if (!err.message.includes('Duplicate key name')) {
+        throw err;
+      }
+      console.log('Index already exists, continuing...');
+    }
+
+    // drop the tables if they exist
+    await runQuery(`DROP TABLE IF EXISTS WineRatings;`);
+    await runQuery(`DROP TABLE IF EXISTS FruitWine;`);
+
+    // Create WineRatings table for optimization
+    await runQuery(`
+    CREATE TEMPORARY TABLE WineRatings AS
+    SELECT
+       W.title,
+       AVG(W.points) AS avg_rating
+    FROM
+       Wine W
+    GROUP BY
+       W.title;
+    `);
+
+    // Create FruitWine table for optimization
+      await runQuery(`
+      CREATE TABLE FruitWine AS
+    SELECT
+      L.Country,
+      W.price,
+      W.title,
+      WR.avg_rating
+    FROM
+        Location L
+    JOIN
+        Wine W ON L.Title = W.title
+    JOIN
+        WineRatings WR ON W.title = WR.title
+    WHERE
+        W.description LIKE '%fruit%'
+        AND L.Country NOT IN ('AR', 'NZ');
+      `);
+
+    // this is the main query
+    const data = await runQuery(`
+    SELECT
+    S.taster_name,
+    COUNT(*) AS num_tastings,
+    AVG(FW.avg_rating) AS avg_wine_rating
+ FROM
+    Sommelier S
+ JOIN
+    FruitWine FW ON FW.title = S.title
+ WHERE
+    S.taster_twitter_handle NOT LIKE '@vossroger'
+    AND NOT EXISTS (
+        SELECT 1
+        FROM WineRatings WR
+        WHERE WR.title = S.title
+        AND WR.avg_rating < 3.0
+    )
+ GROUP BY
+    S.taster_name
+ HAVING
+    num_tastings > 3
+ ORDER BY
+    num_tastings DESC
+ LIMIT 1;`);
+
+    // Send data to client
+    res.json(data);
+
+    // Optionally, clean up MaxPoints table if it's temporary for this query
+    // do this for good practice
+    await runQuery(`DROP TABLE IF EXISTS WineRatings;`);
+    await runQuery(`DROP TABLE IF EXISTS FruitWine;`);
+  } catch (err) {
+    console.error('SQL Error:', err);
+    res.json([]);
+  }
+}
+
+
+const question_six = async function(req, res) {
+  // Function to run a query and return a promise
+  const runQuery = (query) => {
+    return new Promise((resolve, reject) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  try {
+    // create the index on the country table for optimization (include error handling)
+    try {
+      await runQuery(`CREATE INDEX idx_country_abbreviation ON Country(country);`);
+    } catch (err) {
+      if (!err.message.includes('Duplicate key name')) {
+        throw err;
+      }
+      console.log('Index already exists, continuing...');
+    }
+
+    // this is the main query
+    const data = await runQuery(`
+    WITH FruitWine AS (
+      SELECT
+         CA.abbreviation AS country,
+         W.price
+      FROM
+          Location L
+      JOIN
+          Wine W ON L.Title = W.Title
+      JOIN Country_Abb CA ON L.Country = CA.name
+      WHERE
+          W.description NOT LIKE '%fruit%'
+    ),
+    Countries_Temp AS (
+       SELECT C.country, AVG(G.temp) AS avg_temp
+       FROM Country C
+       JOIN GSOD G ON G.stn = C.USAF
+       GROUP BY C.country
+    )
+    SELECT C.country, C.avg_temp, AVG(FW.price)
+    FROM
+      Countries_Temp C
+    JOIN FruitWine FW ON C.country = FW.country
+    WHERE C.avg_temp > (SELECT AVG(temp) FROM GSOD)
+    GROUP BY
+      C.country
+    ORDER BY
+      C.avg_temp DESC
+    `);
+
+    // Send data to client
+    res.json(data);
+  } catch (err) {
+    console.error('SQL Error:', err);
+    res.json([]);
+  }
+}
+
 
 module.exports = {
   random,
@@ -222,5 +442,7 @@ module.exports = {
   question_two,
   question_three,
   question_four,
-  test
+  question_five,
+  question_six
+
 }

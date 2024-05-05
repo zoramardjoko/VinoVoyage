@@ -36,7 +36,7 @@ export default function HomePage() {
   return (
     <Container>
       {selectedWineTitle && <WineCard songId={selectedWineTitle} handleClose={() => setSelectedWineTitle(null)} />}
-      <h2>Wine of The Day:&nbsp;
+      <h2>Wine of The Refresh:&nbsp;
         <Link onClick={() => setSelectedWineTitle(wineOfTheDay.title)}>{wineOfTheDay.title}</Link>
       </h2>
       <h2>Top Wines in our Dataset!</h2>
