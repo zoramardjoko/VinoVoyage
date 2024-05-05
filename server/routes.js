@@ -16,8 +16,6 @@ connection.connect((err) => err && console.log(err));
  * WARM UP ROUTES *
  ******************/
 
-// Route 1: GET /author/:type
-
 // Route 2: GET /random
 // will return random wine title
 const random = async function(req, res) {
@@ -82,14 +80,12 @@ const sommeliers = async function(req, res) {
     }
   });
 }
+
 const top_wines = async function(req, res) {
   const page = req.query.page;
-  // TODO (TASK 8): use the ternary (or nullish) operator to set the pageSize based on the query or default to 10
   const pageSize = req.query.page_size ?? 10;
 
   if (!page) {
-    // TODO (TASK 9)): query the database and return all songs ordered by number of plays (descending)
-    // Hint: you will need to use a JOIN to get the album title as well
     connection.query(`SELECT * FROM Wine ORDER BY points DESC, title ASC LIMIT 12`, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -99,7 +95,6 @@ const top_wines = async function(req, res) {
       }
     });
     } else {
-    // TODO (TASK 10): reimplement TASK 9 with pagination
     connection.query(`SELECT * FROM Wine ORDER BY points DESC, title ASC LIMIT ${(page-1)*pageSize}, ${pageSize}`, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
@@ -150,6 +145,49 @@ const test = async function(req, res) {
   });
 }
 
+const question_one = async function(req, res) {
+  connection.query(`SELECT w.title FROM Wine w JOIN Location L on w.title = L.title WHERE price < 20 
+  AND L.country = 'US' LIMIT 1;`, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+const question_two = async function(req, res) {
+  connection.query(`SELECT * FROM Wine WHERE description LIKE '%citrus%';`, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+}
+
+const question_three = async function(req, res) {
+  connection.query(`SELECT AVG(W.points) AS average_points FROM Wine W
+  JOIN Location L ON W.title = L.title
+  JOIN Sommelier S ON W.title = S.title WHERE L.province = 'Washington'
+  AND S.taster_name IN (
+     SELECT taster_name
+     FROM Sommelier
+     GROUP BY taster_name
+     HAVING COUNT(title) > 10
+  );
+  `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json([]);
+    } else {
+      res.json(data);
+    }
+  });
+}
+
 
 module.exports = {
   random,
@@ -158,5 +196,8 @@ module.exports = {
   sommeliers,
   top_wines,
   search_wines,
-  test
+  test,
+  question_one,
+  question_two,
+  question_three
 }
