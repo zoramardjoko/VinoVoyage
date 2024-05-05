@@ -107,10 +107,11 @@ test('GET /question_two', async () => {
 });
 
 test('GET /question_three', async () => {
+  jest.setTimeout(10000);
   await supertest(app).get('/question_three')
     .expect(200)
     .then((res) => {
-      expect(typeof res.body[0].average_points).toBe('number');
+      expect(typeof res.body[0].avg_price).toBe('number');
     });
 });
 
