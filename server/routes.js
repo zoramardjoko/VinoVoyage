@@ -156,7 +156,20 @@ const question_three = async function(req, res) {
       console.log('Index already exists, continuing...');
     }
 
+    await runQuery(`DROP TABLE IF EXISTS AvgSlp;`);
     await runQuery(`DROP TABLE IF EXISTS GSOD_STN;`);
+
+    // create AvgSlp
+    await runQuery(`
+    CREATE TABLE AvgSlp AS (
+      SELECT AVG(G.Slp)
+        FROM Wine W
+        JOIN Location L ON W.title = L.title
+        JOIN Country C ON L.Country = C.country
+        JOIN GSOD G ON G.Stn = C.USAF
+        WHERE W.winery = ':Nota Bene'
+   );
+   `);
 
     // Create MaxPoints table for optimization
     await runQuery(`
@@ -184,6 +197,7 @@ const question_three = async function(req, res) {
     // Optionally, clean up MaxPoints table if it's temporary for this query
     // do this for good practice
     await runQuery(`DROP TABLE IF EXISTS GSOD_STN;`);
+    await runQuery(`DROP TABLE IF EXISTS AvgSlp;`);
   } catch (err) {
     console.error('SQL Error:', err);
     res.json([]);
