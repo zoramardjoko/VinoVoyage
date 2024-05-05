@@ -252,6 +252,19 @@ const question_four = async function(req, res) {
     res.json([]);
   }
 }
+const test = async function(req, res) {
+  connection.query(`
+  SELECT COUNT(*) as num FROM Country
+`, (err, data) => {
+  if (err || data.length === 0) {
+    console.log(err);
+    res.json({});
+  } else {
+    res.json(data);
+  }
+});
+}
+
 
 const question_five = async function(req, res) {
   // Function to run a query and return a promise
@@ -431,4 +444,5 @@ module.exports = {
   question_four,
   question_five,
   question_six
+
 }
