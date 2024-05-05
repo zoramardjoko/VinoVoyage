@@ -14,6 +14,7 @@ export default function WineSearchPage() {
   const [title, setTitle] = useState('');
   const [points, setPoints] = useState([0,100]);
   const [price, setPrice] = useState([0, 2020]);
+  const [description, setDescription] = useState('');
 
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function WineSearchPage() {
   const search = () => {
     fetch(`http://${config.server_host}:${config.server_port}/search_wines?title=${title}` +
       `&price_lower_bound=${price[0]}&price_upper_bound=${price[1]}` +
-      `&points_lower_bound=${points[0]}&points_upper_bound=${points[1]}`
+      `&points_lower_bound=${points[0]}&points_upper_bound=${points[1]}` + `&description=${description}`
     )
       .then(res => res.json())
       .then(resJson => {
@@ -44,9 +45,10 @@ export default function WineSearchPage() {
   // LazyTable component. The big difference is we provide all data to the DataGrid component
   // instead of loading only the data we need (which is necessary in order to be able to sort by column)
   const columns = [
-    { field: 'title', headerName: 'Title', width: 950, renderCell: (params) => (
+    { field: 'title', headerName: 'Title', width: 850, renderCell: (params) => (
         <Link onClick={() => setSelectedWine(params.row.title)}>{params.value}</Link>
     ) },
+    { field: 'description', headerName: 'Description', width: 500},
     { field: 'price', headerName: 'Price' },
     { field: 'points', headerName: 'Points' },
   ]
@@ -56,8 +58,11 @@ export default function WineSearchPage() {
       {selectedWine && <WineCard songId={selectedWine} handleClose={() => setSelectedWine(null)} />}
       <h2>Search Wines</h2>
       <Grid container spacing={6}>
-        <Grid item xs={12}>
+        <Grid item xs={6}>
           <TextField label='Title' value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: "100%" }}/>
+        </Grid>
+        <Grid item xs={6}>
+          <TextField label='Description' value={description} onChange={(e) => setDescription(e.target.value)} style={{ width: "100%" }}/>
         </Grid>
         <Grid item xs={6}>
           <p>Price</p>
