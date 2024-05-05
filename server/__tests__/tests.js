@@ -114,3 +114,11 @@ test('GET /question_three', async () => {
     });
 });
 
+test('GET /question_four', async () => {
+  await supertest(app).get('/question_four')
+    .expect(200)
+    .then((res) => {
+      expect(res.body.length).toEqual(11);
+    });
+});
+
