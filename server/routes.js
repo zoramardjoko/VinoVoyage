@@ -13,14 +13,11 @@ const connection = mysql.createConnection({
 connection.connect((err) => err && console.log(err));
 
 
-// Route 2: GET /random
+// Route 1: GET /random
 // will return random wine title
 const random = async function(req, res) {
   connection.query(`
-    SELECT *
-    FROM Wine
-    ORDER BY RAND()
-    LIMIT 1
+    SELECT * FROM Wine ORDER BY RAND() LIMIT 1
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -34,7 +31,7 @@ const random = async function(req, res) {
   });
 }
 
-// GET /wine/:title
+// 2: GET /wine/:title
 const wine = async function(req, res) {
   const title = req.params.title;
   connection.query(`SELECT * FROM Wine WHERE title = '${title}' LIMIT 1`, (err, data) => {
@@ -47,21 +44,7 @@ const wine = async function(req, res) {
   });
 }
 
-// GET /sommelier/:taster_name
-// returns all info about a sommelier given their name (twitter handle is cleaned)
-const sommelier = async function(req, res) {
-  const taster_name = req.params.taster_name;
-  connection.query(`SELECT title, taster_name, REGEXP_REPLACE(taster_twitter_handle, '^@', '') AS taster_twitter_handle FROM Sommelier WHERE taster_name = '${taster_name}'`, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({});
-    } else {
-      res.json(data[0]);
-    }
-  });
-}
-
-// Route 5: GET /sommeliers
+// Route 3: GET /sommeliers
 // returns number of wines, sommelier name, twitter handle
 const sommeliers = async function(req, res) {
   connection.query(`SELECT COUNT(title) AS number_of_wines, taster_name AS sommelier, REGEXP_REPLACE(taster_twitter_handle, '^@', '') AS taster_twitter_handle
@@ -69,15 +52,11 @@ const sommeliers = async function(req, res) {
   GROUP BY sommelier
   ORDER BY number_of_wines DESC;
   `, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
+// Route 4: get top 12 wines
 const top_wines = async function(req, res) {
   const page = req.query.page;
   const pageSize = req.query.page_size ?? 10;
@@ -105,23 +84,17 @@ const top_wines = async function(req, res) {
   }
 }
 
+
+// Route 5: search wines
 const search_wines = async function(req, res) {
     const title = req.query.title ?? '';
-    const description = req.query.description ?? '';
-    const designation = req.query.designation ?? '';
     const pointsLower = req.query.points_lower_bound ?? 0;
     const pointsUpper = req.query.points_upper_bound ?? 100;
-
     const priceLower = req.query.price_lower_bound ?? 0;
-    const priceUpper = req.query.price_upper_bound ?? 1000000000000;
+    const priceUpper = req.query.price_upper_bound ?? 2013;
 
-    const variety = req.query.variety ?? '';
-    const winery = req.query.winery ?? '';
-    // title, description, designation, points, price, variety, winery
     connection.query(`SELECT * FROM Wine w WHERE w.title LIKE '%${title}%'
-    AND w.description LIKE '%${description}%' 
-   AND w.designation LIKE '%${designation}%' and w.points >= ${pointsLower} AND w.points <= ${pointsUpper} AND w.price >= ${priceLower} AND w.price <= ${priceUpper} AND w.variety LIKE '%${variety}%'
-   AND w.winery LIKE '%${winery}%';`, (err, data) => {
+    AND w.points >= ${pointsLower} AND w.points <= ${pointsUpper} AND w.price >= ${priceLower} AND w.price <= ${priceUpper};`, (err, data) => {
       if (err || data.length === 0) {
         console.log(err);
         res.json([]);
@@ -131,29 +104,23 @@ const search_wines = async function(req, res) {
     });
 }
 
+
+// trivia: Retrieves a wine under $20 from the US.
 const question_one = async function(req, res) {
   connection.query(`SELECT w.title FROM Wine w JOIN Location L on w.title = L.title WHERE price < 20 
   AND L.country = 'US' LIMIT 1;`, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
+// trivia: Finds wines with descriptions that include the word 'citrus'.
 const question_two = async function(req, res) {
   connection.query(`SELECT * FROM Wine WHERE description LIKE '%citrus%';`, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
+// trivia: Computes the average rating points of wines from Washington reviewed by sommeliers who have reviewed more than 10 wines.
 const question_three = async function(req, res) {
   connection.query(`SELECT AVG(W.points) AS average_points FROM Wine W
   JOIN Location L ON W.title = L.title
@@ -165,12 +132,7 @@ const question_three = async function(req, res) {
      HAVING COUNT(title) > 10
   );
   `, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json([]);
-    } else {
       res.json(data);
-    }
   });
 }
 
@@ -240,7 +202,6 @@ const question_four = async function(req, res) {
 module.exports = {
   random,
   wine,
-  sommelier,
   sommeliers,
   top_wines,
   search_wines,

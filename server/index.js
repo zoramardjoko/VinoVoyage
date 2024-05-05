@@ -12,7 +12,6 @@ app.use(cors({
 // provide their handlers that we implemented in routes.js
 app.get('/random', routes.random);
 app.get('/wine/:title', routes.wine);
-app.get('/sommelier/:taster_name', routes.sommelier);
 app.get('/sommeliers', routes.sommeliers);
 app.get('/top_wines', routes.top_wines);
 app.get('/search_wines', routes.search_wines);
