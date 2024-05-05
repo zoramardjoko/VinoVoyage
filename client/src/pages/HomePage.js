@@ -39,6 +39,7 @@ export default function HomePage() {
       <h2>Wine of The Day:&nbsp;
         <Link onClick={() => setSelectedWineTitle(wineOfTheDay.title)}>{wineOfTheDay.title}</Link>
       </h2>
+      <h2>Top Wines in our Dataset!</h2>
       <div className="masonry-grid">
         {wines.map((wine) => (
           <div className="card" key={wine.title} onClick={() => setSelectedWineTitle(wine.title)}>

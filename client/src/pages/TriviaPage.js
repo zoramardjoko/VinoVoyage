@@ -66,7 +66,24 @@ export default function TriviaGame() {
     });
   }, []);
 
-  // QUESTION 4
+  // QUESTION 9
+  useEffect(() => {
+    fetch(`http://${config.server_host}:${config.server_port}/question_four`)
+    .then(res => res.json())
+    .then(resJson => {
+      setQuestionFour(resJson); // Set the first object from the array
+      });
+  }, []);
+
+
+  // QUESTION 10
+
+
+
+  // QUESTION 11
+
+
+
 
 
     // this is our bank of questions that the trivia page will pull from and use to quiz the user
@@ -81,7 +98,7 @@ const questions = [
   { id: 5, question: "Which red wine grape is most associated with the Bordeaux region of France?", options: ["Merlot", "Pinot Noir", "Cabernet Sauvignon", "Syrah"], answer: "Cabernet Sauvignon"},
   { id: 6, question: "Which wine is not commonly described as citrusy?", options: [questionTwo ? questionTwo[Math.floor(Math.random() * 50)].title : "oops", questionTwo ? questionTwo[Math.floor(Math.random() * 50)].title : "oops", "Charles Smith 2006 Royal City Syrah (Columbia Valley (WA))", questionTwo ? questionTwo[Math.floor(Math.random() * 50)].title : "oops"], answer: "Charles Smith 2006 Royal City Syrah (Columbia Valley (WA))"},
   { id: 7, question: "What is the process called in which sugars in grape juice are converted to alcohol by yeast?", options: ["Distillation", "Fermentation", "Maceration", "Oxidation"], answer: "Fermentation" },
-  { id: 8, question: "D Q 3", options: ["1", "2", "3", "4"], answer: "3"},
+  { id: 8, question: "Which of these highly rated wines are not from U.S. or Italy", options: [questionFour ? questionFour[3].title : "Italy", questionFour ? questionFour[6].title : "U.S.", questionFour ? questionFour[7].title : "U.S.", questionFour ? questionFour[0].title : "AR"], answer: questionFour ? questionFour[0].title : "AR"},
   { id: 9, question: "What is the average point value of wines from Washington that have been tasted by sommeliers that have tasted over 10 wines?", options: [questionThree ? String(questionThree[0].average_points) : "89.2355", "87.2", "70.57", "75.234"], answer: questionThree ? questionThree.average_points : "89.2355"},
   { id: 10, question: "D Q 3", options: ["1", "2", "3", "4"], answer: "3"},
   { id: 11, question: "DQ4", options: ["1", "2", "3", "4"], answer: "4"},

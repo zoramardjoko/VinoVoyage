@@ -174,6 +174,68 @@ const question_three = async function(req, res) {
   });
 }
 
+const question_four = async function(req, res) {
+  // Function to run a query and return a promise
+  const runQuery = (query) => {
+    return new Promise((resolve, reject) => {
+      connection.query(query, (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result);
+        }
+      });
+    });
+  };
+
+  try {
+    // create the index on the country table for optimization (include error handling)
+    try {
+      await runQuery(`CREATE INDEX idx_country_abbreviation ON Country(country);`);
+    } catch (err) {
+      if (!err.message.includes('Duplicate key name')) {
+        throw err;
+      }
+      console.log('Index already exists, continuing...');
+    }
+
+    // Create MaxPoints table for optimization
+    await runQuery(`
+      CREATE TABLE MaxPoints AS
+      SELECT
+        L.Country,
+        MAX(W.points) AS max_points
+      FROM
+        Wine AS W
+        JOIN Location AS L ON W.title = L.Title
+      GROUP BY
+        L.Country
+    `);
+
+    // this is the main query
+    const data = await runQuery(`
+      SELECT C.country, AVG(W.points) AS avg_rating, W.title, W.points AS max_rating
+      FROM (SELECT title, points FROM Wine) AS W
+      JOIN (SELECT Title, country FROM Location) AS L ON W.title = L.Title
+      JOIN (SELECT name, abbreviation FROM Country_Abb) AS CA ON L.country = CA.name
+      JOIN (SELECT DISTINCT country FROM Country) AS C ON CA.abbreviation = C.country
+      JOIN (SELECT max_points, country FROM MaxPoints) AS MaxPoints ON W.points = MaxPoints.max_points AND L.country = MaxPoints.country
+      GROUP BY C.country, W.title
+      ORDER BY C.country;
+    `);
+
+    // Send data to client
+    res.json(data);
+
+    // Optionally, clean up MaxPoints table if it's temporary for this query
+    // do this for good practice
+    await runQuery(`DROP TABLE IF EXISTS MaxPoints;`);
+  } catch (err) {
+    console.error('SQL Error:', err);
+    res.json([]);
+  }
+}
+
 
 module.exports = {
   random,
@@ -184,5 +246,6 @@ module.exports = {
   search_wines,
   question_one,
   question_two,
-  question_three
+  question_three,
+  question_four
 }

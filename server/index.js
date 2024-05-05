@@ -19,6 +19,7 @@ app.get('/search_wines', routes.search_wines);
 app.get('/question_one', routes.question_one);
 app.get('/question_two', routes.question_two);
 app.get('/question_three', routes.question_three);
+app.get('/question_four', routes.question_four);
 
 
 app.listen(config.server_port, () => {
