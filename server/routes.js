@@ -230,6 +230,8 @@ const question_four = async function(req, res) {
       console.log('Index already exists, continuing...');
     }
 
+    await runQuery(`DROP TABLE IF EXISTS MaxPoints;`);
+
     // Create MaxPoints table for optimization
     await runQuery(`
       CREATE TABLE MaxPoints AS
