@@ -106,11 +106,12 @@ test('GET /question_two', async () => {
     });
 });
 
+jest.setTimeout(10000);
 test('GET /question_three', async () => {
   await supertest(app).get('/question_three')
     .expect(200)
     .then((res) => {
-      expect(typeof res.body[0].average_points).toBe('number');
+      expect(typeof res.body[0].avg_price).toBe('number');
     });
 });
 
@@ -121,4 +122,22 @@ test('GET /question_four', async () => {
       expect(res.body.length).toEqual(11);
     });
 });
+
+test('GET /question_five', async () => {
+  await supertest(app).get('/question_five')
+    .expect(200)
+    .then((res) => {
+      expect(res.body.length).toEqual(1);
+    });
+});
+
+
+test('GET /question_six', async () => {
+  await supertest(app).get('/question_six')
+    .expect(200)
+    .then((res) => {
+      expect(res.body.length).toEqual(5);
+    });
+});
+
 
