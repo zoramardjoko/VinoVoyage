@@ -24,7 +24,7 @@ export default function TriviaGame() {
     // sections for the queriees for some of the questions
     // QUESTION 3
     useEffect(() => {
-      fetch(`http://${config.server_host}:${config.server_port}/question_one`)
+      fetch(`https://vino-voyage-server.vercel.app/question_one`)
       .then(res => res.json())
       .then(resJson => {
         // Ensure the array is not empty and set the first item
@@ -38,7 +38,7 @@ export default function TriviaGame() {
 
   //  QUESTION 6
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/question_two`)
+    fetch(`https://vino-voyage-server.vercel.app/question_two`)
     .then(res => res.json())
     .then(resJson => {
       setQuestionTwo(resJson); // Set the first object from the array
@@ -47,7 +47,7 @@ export default function TriviaGame() {
 
   // QUESTION 3
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/question_three`)
+    fetch(`https://vino-voyage-server.vercel.app/question_three`)
     .then(res => {
       if (!res.ok) {
         throw new Error('Network response was not ok');
@@ -69,7 +69,7 @@ export default function TriviaGame() {
 
   // QUESTION 9
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/question_four`)
+    fetch(`https://vino-voyage-server.vercel.app/question_four`)
     .then(res => res.json())
     .then(resJson => {
       setQuestionFour(resJson); // Set the first object from the array
@@ -79,7 +79,7 @@ export default function TriviaGame() {
 
   // QUESTION 10
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/question_five`)
+    fetch(`https://vino-voyage-server.vercel.app/question_five`)
     .then(res => res.json())
     .then(resJson => {
       setQuestionFive(resJson); // Set the first object from the array
@@ -89,7 +89,7 @@ export default function TriviaGame() {
 
   // QUESTION 11
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/question_six`)
+    fetch(`https://vino-voyage-server.vercel.app/question_six`)
     .then(res => res.json())
     .then(resJson => {
       setQuestionSix(resJson); // Set the first object from the array

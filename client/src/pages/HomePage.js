@@ -18,14 +18,14 @@ export default function HomePage() {
     // Fetch request to get the song of the day. Fetch runs asynchronously.
     // The .then() method is called when the fetch request is complete
     // and proceeds to convert the result to a JSON which is finally placed in state.
-    fetch(`http://${config.server_host}:${config.server_port}/random`)
+    fetch(`https://vino-voyage-server.vercel.app/random`)
       .then(res => res.json())
       .then(resJson => setWineOfTheDay(resJson));
 
   }, []);
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/top_wines`)
+    fetch(`https://vino-voyage-server.vercel.app/top_wines`)
       .then(res => res.json())
       .then(resJson => {
         setWines(resJson);

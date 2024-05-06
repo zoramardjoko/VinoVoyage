@@ -18,7 +18,7 @@ export default function WineSearchPage() {
 
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_wines`)
+    fetch(`https://vino-voyage-server.vercel.app/search_wines`)
       .then(res => res.json())
       .then(resJson => {
         const songsWithId = resJson.map((song) => ({ id: song.song_id, ...song }));
@@ -27,7 +27,7 @@ export default function WineSearchPage() {
   }, []);
 
   const search = () => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_wines?title=${title}` +
+    fetch(`https://vino-voyage-server.vercel.app/search_wines?title=${title}` +
       `&price_lower_bound=${price[0]}&price_upper_bound=${price[1]}` +
       `&points_lower_bound=${points[0]}&points_upper_bound=${points[1]}` + `&description=${description}`
     )
